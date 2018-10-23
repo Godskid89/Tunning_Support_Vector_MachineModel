@@ -1,0 +1,47 @@
+---
+title: "Tunning Support Vector Machine Model"
+author: "Joseph Oladokun"
+date: "October 23, 2018"
+output: html_document
+---
+library(ISLR)
+library(e1071)
+
+```{r}
+print(head(iris))
+```
+
+## SVM Model
+
+Build your Support Vector Machine Model Using the IRIS dataset
+
+```{r model}
+model <- svm(Species ~ ., data = iris)
+```
+
+## Summary
+
+Get the Model Summary
+
+```{r summary}
+summary(model)
+```
+
+Let's tune the cost and the gamma to get the best possible error rate
+```{r}
+tune.results <- tune(svm,train.x = iris[1:4],train.y = iris[,5],kernel = 'radial', 
+                     ranges = list(cost=c(0.1,1,10), gamma = c(0.5,1,2)))
+summary(tune.results)
+```
+The table above shows 1.0 and 0.5 will give us the best error rate. Lets tune between these values
+```{r}
+tune.results <- tune(svm,train.x = iris[1:4],train.y = iris[,5],kernel = 'radial', 
+                     ranges = list(cost=c(0.5,1,1.5), gamma = c(0.1,0.5,0.7)))
+summary(tune.results)
+```
+Now when the values of cost = 1.5 and gamma = 0.1 we have the best error rate.
+You can keep tunning around those figures to get the best possible error rates.
+```{r}
+tuned.svm <- svm(Species ~ ., data = iris, kernel = "radial", cost = 1.5, gamma = 0.1)
+summary(tuned.svm)
+```
